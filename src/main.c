@@ -8,15 +8,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 /// Dependencies
 ///////////////////////////////////////////////////////////////////////////////
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#include "panoramix.h"
 
 ///////////////////////////////////////////////////////////////////////////////
-int check_args(int argc, char **argv)
+static int check_args(int argc, char **argv)
 {
     if (argc != 5) {
         printf(
@@ -40,5 +35,5 @@ int main(int argc, char **argv)
     if (error_chack == 84) {
         return (84);
     }
-    return (0);
+    return (panoramix_core(argc, argv));
 }

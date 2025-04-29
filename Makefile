@@ -5,23 +5,31 @@
 ## Makefile
 ##
 
-SRC = main.c
+CC			=	gcc
 
-OBJ = $(SRC:.c=.o)
+INCLUDES	=	-Iinclude
+CCFLAGS		=	-Wall -Wextra
+FLAGS		=	$(INCLUDES) $(CCFLAGS) $(LDFLAGS)
 
-NAME = panoramix
+DIRECTORY   =	src
 
-FLAGS = -Wall -Wextra -std=gnu17
+SOURCES		=	$(shell find $(DIRECTORY) -type f -iname "*.c")
+OBJECTS		=	$(SOURCES:.c=.o)
 
-all: $(NAME)
+TARGET		=	panoramix
 
-$(NAME):
-	gcc -o $(NAME) $(SRC) -Iinclude $(FLAGS) -g3
+all: $(TARGET)
+
+%.o: %.c
+	$(CC) -c $< -o $@ $(FLAGS)
+
+$(TARGET): $(OBJECTS)
+	$(CC) -o $(TARGET) $(OBJECTS) $(FLAGS)
 
 clean:
-	rm -f $(OBJ)
+	rm -f $(OBJECTS)
 
 fclean: clean
-	rm -f $(NAME)
+	rm -f $(TARGET)
 
 re: fclean all
