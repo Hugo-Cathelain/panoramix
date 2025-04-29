@@ -21,7 +21,8 @@ void *druid_routine(void *arg)
     while (refills_left > 0 && last_villager > 0) {
         sem_wait(&data->pot_empty_sem);
         pthread_mutex_lock(&data->pot_mutex);
-        if (&data->villager_left != last_villager) {
+        if (data->villager_left != last_villager) {
+            printf("check here\n");
             last_villager = data->villager_left;
             pthread_mutex_unlock(&data->pot_mutex);
             continue;

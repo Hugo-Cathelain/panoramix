@@ -39,6 +39,32 @@ static int init_mutex(panoramix_t *data)
     return (0);
 }
 
+static void destroy_mutex(panoramix_t *data)
+{
+    pthread_mutex_destroy(&data->pot_mutex);
+    pthread_mutex_destroy(&data->druid_mutex);
+    sem_destroy(&data->pot_empty_sem);
+    sem_destroy(&data->pot_filled_sem);
+}
+
+static void init_threads(pthread_t *druid_thread, pthread_t *villager_threads,
+                        villager_args_t *villager_args, panoramix_t *data)
+{
+    if (pthread_create(druid_thread, NULL, druid_routine, data) != 0) {
+        fprintf(stderr, "Error creating druid thread\n");
+        return;
+    }
+    for (int i = 0; i < data->nb_villagers; i++) {
+        villager_args[i].id = i;
+        villager_args[i].data = data;
+        if (pthread_create(&villager_threads[i], NULL, villager_routine,
+            &villager_args[i]) != 0) {
+            fprintf(stderr, "Error creating villager thread\n");
+            return;
+        }
+    }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 int panoramix_core(int argc, char **argv)
 {
@@ -61,30 +87,12 @@ int panoramix_core(int argc, char **argv)
         free(villager_threads);
         return 84;
     }
-    if (pthread_create(&druid_thread, NULL, druid_routine, &data) != 0) {
-        fprintf(stderr, "Error creating druid thread\n");
-        free(villager_threads);
-        free(villager_args);
-        return 84;
-    }
-    for (int i = 0; i < data.nb_villagers; i++) {
-        villager_args[i].id = i;
-        villager_args[i].data = &data;
-        if (pthread_create(&villager_threads[i], NULL, villager_routine, &villager_args[i]) != 0) {
-            fprintf(stderr, "Error creating villager thread\n");
-            free(villager_threads);
-            free(villager_args);
-            return 84;
-        }
-    }
+    init_threads(&druid_thread, villager_threads, villager_args, &data);
     pthread_join(druid_thread, NULL);
     for (int i = 0; i < data.nb_villagers; i++) {
         pthread_join(villager_threads[i], NULL);
     }
-    pthread_mutex_destroy(&data.pot_mutex);
-    pthread_mutex_destroy(&data.druid_mutex);
-    sem_destroy(&data.pot_empty_sem);
-    sem_destroy(&data.pot_filled_sem);
+    destroy_mutex(&data);
     free(villager_threads);
     free(villager_args);
     return 0;
