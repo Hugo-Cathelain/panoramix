@@ -15,9 +15,6 @@ static void druid_final_actions(panoramix_t *data)
     if (data->villager_left > 0) {
         printf("Druid: I'm out of viscum. I'm going back to... zZz\n");
     }
-    for (int i = 0; i < data->nb_villagers; i++) {
-        sem_post(&data->pot_filled_sem);
-    }
 }
 
 static void druid_speach(int nb)

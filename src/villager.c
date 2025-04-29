@@ -20,6 +20,7 @@ void *villager_routine(void *arg)
 
     printf("Villager %d: Going into battle!\n", villager->id);
     while (fights_left > 0) {
+        usleep(rand() % 55);
         pthread_mutex_lock(&data->pot_mutex);
         printf("Villager %d: I need a drink... I see %d servings left.\n",
             villager->id, data->servings_left);
