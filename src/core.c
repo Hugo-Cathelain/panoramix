@@ -47,8 +47,8 @@ static void destroy_mutex(panoramix_t *data)
     sem_destroy(&data->pot_filled_sem);
 }
 
-static void init_threads(pthread_t *druid_thread, pthread_t *villager_threads,
-                        villager_args_t *villager_args, panoramix_t *data)
+static void create_threads(pthread_t *druid_thread, pthread_t *villager_threads,
+    villager_args_t *villager_args, panoramix_t *data)
 {
     if (pthread_create(druid_thread, NULL, druid_routine, data) != 0) {
         fprintf(stderr, "Error creating druid thread\n");
@@ -66,28 +66,32 @@ static void init_threads(pthread_t *druid_thread, pthread_t *villager_threads,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+static int init_thread(unsigned long size, pthread_t **thread, int nb)
+{
+    *thread = malloc(size * nb);
+    if (!thread) {
+        fprintf(stderr, "Memory allocation error\n");
+        return (84);
+    }
+    return (0);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 int panoramix_core(int argc, char **argv)
 {
     pthread_t druid_thread;
-    pthread_t *villager_threads;
-    villager_args_t *villager_args;
+    pthread_t *villager_threads = NULL;
+    villager_args_t *villager_args = NULL;
     panoramix_t data = get_data(argc, argv);
 
-    if (init_mutex(&data) != 0) {;
-        return 84;
+    if (init_mutex(&data) != 0 ||
+        init_thread(sizeof(pthread_t), &villager_threads,
+        data.nb_villagers) != 0 ||
+        init_thread(sizeof(villager_args_t), (pthread_t **)&villager_args,
+        data.nb_villagers) != 0) {
+        return (84);
     }
-    villager_threads = malloc(sizeof(pthread_t) * data.nb_villagers);
-    if (!villager_threads) {
-        fprintf(stderr, "Memory allocation error\n");
-        return 84;
-    }
-    villager_args = malloc(sizeof(villager_args_t) * data.nb_villagers);
-    if (!villager_args) {
-        fprintf(stderr, "Memory allocation error\n");
-        free(villager_threads);
-        return 84;
-    }
-    init_threads(&druid_thread, villager_threads, villager_args, &data);
+    create_threads(&druid_thread, villager_threads, villager_args, &data);
     pthread_join(druid_thread, NULL);
     for (int i = 0; i < data.nb_villagers; i++) {
         pthread_join(villager_threads[i], NULL);
