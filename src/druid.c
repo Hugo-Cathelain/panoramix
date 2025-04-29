@@ -10,15 +10,30 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "panoramix.h"
 
+static void druid_final_actions(panoramix_t *data)
+{
+    if (data->villager_left > 0) {
+        printf("Druid: I'm out of viscum. I'm going back to... zZz\n");
+    }
+    for (int i = 0; i < data->nb_villagers; i++) {
+        sem_post(&data->pot_filled_sem);
+    }
+}
+
+static void druid_speach(int nb)
+{
+    printf("Druid: Ah! Yes, yes, I'm awake! Working on it! Beware ");
+    printf("I can only make %d more refills after this one.\n", nb - 1);
+}
+
 //////////////////////////////////::///////////////////////////////////////////
 void *druid_routine(void *arg)
 {
     panoramix_t *data = (panoramix_t *)arg;
-    int refills_left = data->nb_refills;
     int last_villager = data->villager_left;
 
     printf("Druid: I'm ready... but sleepy...\n");
-    while (refills_left > 0 && last_villager > 0) {
+    while (data->nb_refills > 0 && last_villager > 0) {
         sem_wait(&data->pot_empty_sem);
         pthread_mutex_lock(&data->pot_mutex);
         if (data->villager_left != last_villager) {
@@ -26,17 +41,12 @@ void *druid_routine(void *arg)
             pthread_mutex_unlock(&data->pot_mutex);
             continue;
         }
-        printf("Druid: Ah! Yes, yes, I'm awake! Working on it! Beware I can only make %d more refills after this one.\n", refills_left - 1);
+        druid_speach(data->nb_refills);
         data->servings_left = data->pot_size;
-        refills_left--;
+        data->nb_refills--;
         pthread_mutex_unlock(&data->pot_mutex);
         sem_post(&data->pot_filled_sem);
     }
-    if (data->villager_left > 0) {
-        printf("Druid: I'm out of viscum. I'm going back to... zZz\n");
-    }
-    for (int i = 0; i < data->nb_villagers; i++) {
-        sem_post(&data->pot_filled_sem);
-    }
+    druid_final_actions(data);
     return NULL;
 }

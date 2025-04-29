@@ -22,7 +22,7 @@ void *villager_routine(void *arg)
     while (fights_left > 0) {
         pthread_mutex_lock(&data->pot_mutex);
         printf("Villager %d: I need a drink... I see %d servings left.\n",
-               villager->id, data->servings_left);
+            villager->id, data->servings_left);
         if (data->servings_left == 0) {
             need_to_wake_druid = 1;
             pthread_mutex_unlock(&data->pot_mutex);
@@ -40,7 +40,7 @@ void *villager_routine(void *arg)
                 sem_post(&data->pot_filled_sem);
             }
             printf("Villager %d: Take that roman scum! Only %d left.\n",
-                   villager->id, fights_left - 1);
+                villager->id, fights_left - 1);
             fights_left--;
         } else {
             pthread_mutex_unlock(&data->pot_mutex);

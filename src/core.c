@@ -47,8 +47,9 @@ static void destroy_mutex(panoramix_t *data)
     sem_destroy(&data->pot_filled_sem);
 }
 
-static void create_threads(pthread_t *druid_thread, pthread_t *villager_threads,
-    villager_args_t *villager_args, panoramix_t *data)
+static void create_threads(pthread_t *druid_thread,
+    pthread_t *villager_threads, villager_args_t *villager_args,
+    panoramix_t *data)
 {
     if (pthread_create(druid_thread, NULL, druid_routine, data) != 0) {
         fprintf(stderr, "Error creating druid thread\n");
@@ -76,6 +77,15 @@ static int init_thread(unsigned long size, pthread_t **thread, int nb)
     return (0);
 }
 
+void join_threads(pthread_t *druid_thread, pthread_t *villager_threads,
+    int nb_villagers)
+{
+    pthread_join(*druid_thread, NULL);
+    for (int i = 0; i < nb_villagers; i++) {
+        pthread_join(villager_threads[i], NULL);
+    }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 int panoramix_core(int argc, char **argv)
 {
@@ -92,12 +102,9 @@ int panoramix_core(int argc, char **argv)
         return (84);
     }
     create_threads(&druid_thread, villager_threads, villager_args, &data);
-    pthread_join(druid_thread, NULL);
-    for (int i = 0; i < data.nb_villagers; i++) {
-        pthread_join(villager_threads[i], NULL);
-    }
+    join_threads(&druid_thread, villager_threads, data.nb_villagers);
     destroy_mutex(&data);
     free(villager_threads);
     free(villager_args);
-    return 0;
+    return (0);
 }
