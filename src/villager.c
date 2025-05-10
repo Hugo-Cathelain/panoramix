@@ -74,10 +74,10 @@ void *villager_routine(void *arg)
     while (fights_left > 0) {
         usleep(rand() % 55);
         need_to_wake_druid = request_potion(villager, data);
-        fights_left = drink_and_fight(villager, data, need_to_wake_druid,
-            fights_left);
         if (data->servings_left == 0 && need_to_wake_druid == 0)
             break;
+        fights_left = drink_and_fight(villager, data, need_to_wake_druid,
+            fights_left);
     }
     finish_villager_work(villager, data);
     return NULL;
