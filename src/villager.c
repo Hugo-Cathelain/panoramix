@@ -16,6 +16,7 @@ static void announce_battle_start(villager_args_t *villager)
     printf("Villager %d: Going into battle!\n", villager->id);
 }
 
+///////////////////////////////////////////////////////////////////////////////
 static int request_potion(villager_args_t *villager, panoramix_t *data)
 {
     int need_to_wake_druid = 0;
@@ -35,6 +36,7 @@ static int request_potion(villager_args_t *villager, panoramix_t *data)
     return need_to_wake_druid;
 }
 
+///////////////////////////////////////////////////////////////////////////////
 static int drink_and_fight(villager_args_t *villager, panoramix_t *data,
     int need_to_wake_druid, int fights_left)
 {
@@ -54,6 +56,7 @@ static int drink_and_fight(villager_args_t *villager, panoramix_t *data,
     return fights_left;
 }
 
+///////////////////////////////////////////////////////////////////////////////
 static void finish_villager_work(villager_args_t *villager, panoramix_t *data)
 {
     pthread_mutex_lock(&data->pot_mutex);
@@ -63,6 +66,7 @@ static void finish_villager_work(villager_args_t *villager, panoramix_t *data)
     printf("Villager %d: I'm going to sleep now.\n", villager->id);
 }
 
+///////////////////////////////////////////////////////////////////////////////
 void *villager_routine(void *arg)
 {
     villager_args_t *villager = (villager_args_t *)arg;

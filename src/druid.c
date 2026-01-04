@@ -17,13 +17,14 @@ static void druid_final_actions(panoramix_t *data)
     }
 }
 
+///////////////////////////////////////////////////////////////////////////////
 static void druid_speach(int nb)
 {
     printf("Druid: Ah! Yes, yes, I'm awake! Working on it! Beware ");
     printf("I can only make %d more refills after this one.\n", nb - 1);
 }
 
-//////////////////////////////////::///////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 void *druid_routine(void *arg)
 {
     panoramix_t *data = (panoramix_t *)arg;

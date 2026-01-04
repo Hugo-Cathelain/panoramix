@@ -39,6 +39,7 @@ static int init_mutex(panoramix_t *data)
     return (0);
 }
 
+///////////////////////////////////////////////////////////////////////////////
 static void destroy_mutex(panoramix_t *data)
 {
     pthread_mutex_destroy(&data->pot_mutex);
@@ -47,6 +48,7 @@ static void destroy_mutex(panoramix_t *data)
     sem_destroy(&data->pot_filled_sem);
 }
 
+///////////////////////////////////////////////////////////////////////////////
 static void create_threads(pthread_t *druid_thread,
     pthread_t *villager_threads, villager_args_t *villager_args,
     panoramix_t *data)
@@ -77,6 +79,7 @@ static int init_thread(unsigned long size, pthread_t **thread, int nb)
     return (0);
 }
 
+///////////////////////////////////////////////////////////////////////////////
 void join_threads(pthread_t *druid_thread, pthread_t *villager_threads,
     int nb_villagers)
 {
