@@ -1,5 +1,3 @@
-...existing code...
-
 # Panoramix
 
 Small multithreaded simulation where villagers drink potion made by a druid before going to battle.
